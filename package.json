@@ -1,0 +1,18 @@
+{
+  "name": "calcite-create-issues",
+  "version": "0.0.1",
+  "description": "Automatically creates GitHub issues for each component.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "postinstall": "git submodule update --init --recursive",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ben Elan",
+  "license": "MIT",
+  "dependencies": {
+    "@octokit/plugin-throttling": "^3.6.2",
+    "@octokit/rest": "^18.12.0"
+  }
+}

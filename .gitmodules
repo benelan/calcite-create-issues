@@ -1,0 +1,3 @@
+[submodule "calcite-components"]
+	path = calcite-components
+	url = https://github.com/Esri/calcite-components
