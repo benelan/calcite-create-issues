@@ -46,7 +46,7 @@ const checklist = `
 
 if (!repoScopedPAT) {
   console.error(
-    "The script is missing a 'repo' scoped GitHub Personal Access Token. Please make sure to fill in the correct information."
+    "The script is missing a 'repo' scoped GitHub Personal Access Token."
   );
   process.exit(1);
 }

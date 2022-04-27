@@ -10,8 +10,7 @@ export const sleep = ms => new Promise(r => setTimeout(r, ms));
 export const toggleLoadingAnimation = (() => {
   let called = false;
   let interval;
-
-  return () => {
+  return (message = "loading") => {
     if (!called) {
       // clear interval for all exit event types
       [
@@ -30,7 +29,7 @@ export const toggleLoadingAnimation = (() => {
       interval = setInterval(() => {
         if (count % 7 === 0)
         // delete line, send cursor back to start, add message
-        process.stdout.write("\u001B[2K\rcreating issues");
+        process.stdout.write(`\u001B[2K\r${message}`);
       else process.stdout.write(".");
       count += 1;
       }, 100);

@@ -36,7 +36,7 @@ const skipComponents = [
 
 if (!repoScopedPAT) {
   console.error(
-    "The script is missing a 'repo' scoped GitHub Personal Access Token. Please make sure to fill in the correct information."
+    "The script is missing a 'repo' scoped GitHub Personal Access Token."
   );
   process.exit(1);
 }
@@ -68,7 +68,7 @@ const componentsPath = resolve(
 
 (async () => {
   try {
-    toggleLoadingAnimation();
+    toggleLoadingAnimation("creating issues");
     const componentDirectories = await getDirectories(componentsPath);
 
     const ThrottledOctokit = Octokit.plugin(throttling);
