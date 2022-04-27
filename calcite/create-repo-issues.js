@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { resolve } from "path";
-import { readdir } from "fs/promises";
 import { URL } from "url";
 import { Octokit } from "@octokit/rest";
 import { throttling } from "@octokit/plugin-throttling";
+import { getDirectories, sleep, toggleLoadingAnimation } from "./utils.js";
 
 const componentsPath = resolve(
   new URL(".", import.meta.url).pathname,
@@ -31,7 +31,7 @@ const repoOwner = "WebGIS"; // user or org
 const repoName = "calcite-components";
 
 const issueLabels = ["figma"];
-const issueTitle = (component) => `Figma v2 design: ${component}`;
+const issueTitle = (component) => `[${component}] Figma v2 design`;
 const issueBody = (component) => `## Description
 Create a Figma v2 design for ${component}.
 
@@ -46,16 +46,22 @@ Create a Figma v2 design for ${component}.
 // Change createdIssueCount to that number, wait a while, and run the script again.
 // https://docs.github.com/en/rest/overview/resources-in-the-rest-api#secondary-rate-limits
 let createdIssuesCount = 0;
-let progressInterval;
-
-const getDirectories = async (directoryPath) =>
-  (await readdir(directoryPath, { withFileTypes: true }))
-    .filter((dirent) => dirent.isDirectory())
-    .map((dirent) => dirent.name);
+[
+  `exit`,
+  `SIGINT`,
+  `SIGUSR1`,
+  `SIGUSR2`,
+  `uncaughtException`,
+  `SIGTERM`,
+].forEach((event) => {
+  process.once(event, () =>
+    console.log("\n\nTotal issues created:", createdIssuesCount)
+  );
+});
 
 (async () => {
   try {
-    showProgress();
+    toggleLoadingAnimation();
     const componentDirectories = await getDirectories(componentsPath);
 
     const ThrottledOctokit = Octokit.plugin(throttling);
@@ -78,59 +84,31 @@ const getDirectories = async (directoryPath) =>
           octokit.log.warn(
             `SecondaryRateLimit detected for request ${options.method} ${options.url}`
           );
+          process.exit(1);
         },
       },
     });
 
-    for (const [index, component] of componentDirectories.entries()) {
-      if (skipComponents.includes(component) || createdIssuesCount + 1 >= index)
-        continue;
+    const components = componentDirectories.filter(
+      (c) => !skipComponents.includes(c)
+    );
 
-      await octokit.rest.issues.create({
-        owner: repoOwner,
-        repo: repoName,
-        title: issueTitle(component),
-        body: issueBody(component),
-        labels: issueLabels,
-      });
-
-      createdIssuesCount += 1;
+    for (const [index, component] of components.entries()) {
+      if (createdIssuesCount <= index) {
+        await octokit.rest.issues.create({
+          owner: repoOwner,
+          repo: repoName,
+          title: issueTitle(component),
+          body: issueBody(component),
+          labels: issueLabels,
+        });
+        createdIssuesCount += 1;
+        await sleep(2000);
+      }
     }
+    process.exit(0);
   } catch (err) {
     console.error(err);
-    process.exitCode = 1;
+    process.exit(1);
   }
 })();
-
-function showProgress() {
-  if (!progressInterval) {
-    // clear interval for all exit types
-    [
-      `exit`,
-      `SIGINT`,
-      `SIGUSR1`,
-      `SIGUSR2`,
-      `uncaughtException`,
-      `SIGTERM`,
-    ].forEach((event) => {
-      process.once(event, showProgress);
-      process.once(event, () =>
-        console.log("\n\nTotal issues created:", createdIssuesCount)
-      );
-    });
-    // hide cursor
-    process.stdout.write("\u001B[?25l\r");
-    let count = 0;
-    progressInterval = setInterval(() => {
-      if (count % 7 === 0)
-        // delete line, send cursor back to start, add message
-        process.stdout.write("\u001B[2K\rcreating issues");
-      else process.stdout.write(".");
-      count += 1;
-    }, 150);
-  } else {
-    clearInterval(progressInterval);
-    // show cursor and delete loading icons
-    process.stdout.write(`\u001B[2K\r\u001B[?25h`);
-  }
-}
