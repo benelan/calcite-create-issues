@@ -1,2 +1,3 @@
-# Calcite Create Issues
-Automatically creates GitHub issues for each Calcite Component.
+# GitHub Scripts
+
+Automation scripts using the GitHub API.

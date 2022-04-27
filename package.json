@@ -1,11 +1,9 @@
 {
-  "name": "calcite-create-issues",
+  "name": "github-scripts",
   "version": "0.0.1",
-  "description": "Automatically creates GitHub issues for each component.",
-  "main": "index.js",
+  "description": "Automation scripts using the GitHub API.",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
     "postinstall": "git submodule update --init --recursive",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

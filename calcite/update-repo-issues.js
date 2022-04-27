@@ -10,15 +10,6 @@ const repoName = "calcite-components";
 
 const issueLabels = ["figma"];
 const checklist = `
-
-## Requirements
-
-> Designer can fill in what needs to be done (variants, themes, RTL, etc).
-
-## Checklists
-
-Use the checklists during review.
-
 ### Review 1
 
 - [ ] Structure matches web component
@@ -55,8 +46,8 @@ Use the checklists during review.
 
 (async () => {
   try {
-    const MyOctokit = Octokit.plugin(throttling);
-    const octokit = new MyOctokit({
+    const ThrottledOctokit = Octokit.plugin(throttling);
+    const octokit = new ThrottledOctokit({
       baseUrl,
       auth: repoScopedPAT,
       throttle: {

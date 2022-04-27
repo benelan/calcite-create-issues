@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 import { resolve } from "path";
-import { readdir } from "fs/promises";
 import { Octokit } from "@octokit/rest";
 import { throttling } from "@octokit/plugin-throttling";
+import {getDirectories} from "../utils.js"
 
-const COMPONENTS_PATH = resolve(
+const componentsPath = resolve(
   process.cwd(),
   "calcite-components",
   "src",
   "components"
 );
 
-const SKIP_COMPONENTS = [
+const skipComponents = [
   "functional",
   "color-picker-hex-input",
   "color-picker-swatch",
@@ -47,18 +47,13 @@ Create a Figma v2 design for ${component}.
 let createdIssuesCount = 0;
 let progressInterval;
 
-const getDirectories = async (directoryPath) =>
-  (await readdir(directoryPath, { withFileTypes: true }))
-    .filter((dirent) => dirent.isDirectory())
-    .map((dirent) => dirent.name);
-
 (async () => {
   try {
     showProgress();
-    const componentDirectories = await getDirectories(COMPONENTS_PATH);
+    const componentDirectories = await getDirectories(componentsPath);
 
-    const MyOctokit = Octokit.plugin(throttling);
-    const octokit = new MyOctokit({
+    const ThrottledOctokit = Octokit.plugin(throttling);
+    const octokit = new ThrottledOctokit({
       baseUrl,
       auth: repoScopedPAT,
       throttle: {
@@ -83,7 +78,7 @@ const getDirectories = async (directoryPath) =>
 
     for (const [index, component] of componentDirectories.entries()) {
       if (
-        SKIP_COMPONENTS.includes(component) ||
+        skipComponents.includes(component) ||
         createdIssuesCount + 1 >= index
       )
         continue;
