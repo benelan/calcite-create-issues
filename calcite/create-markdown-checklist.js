@@ -4,8 +4,8 @@ import { URL } from "url";
 import { createWriteStream } from "fs";
 import { getDirectories } from "../utils.js";
 
-// writes names next to components in the checklist
-// empty array skips adding names
+// evenly adds names next to components in the checklist
+// an empty array skips adding names
 const assignees = ["Add", "Assignees", "Here"];
 
 const skip = [
@@ -36,6 +36,7 @@ const outputPath = resolve("component-checklist.md");
 
     const componentsPerAssignee =
       (componentDirectories.length - skip.length) / assignees.length;
+
     for (const [index, component] of Object.entries(componentDirectories)) {
       if (skip.includes(component)) {
         continue;
@@ -46,7 +47,7 @@ const outputPath = resolve("component-checklist.md");
         0
       );
       stream.write(`- [ ] \`${component}\``);
-      stream.write(assignees.length ? `(${assignees[assigneeIndex]})\n` : "\n");
+      stream.write(assignees.length ? ` (${assignees[assigneeIndex]})\n` : "\n");
     }
   } catch (err) {
     console.error(err);
