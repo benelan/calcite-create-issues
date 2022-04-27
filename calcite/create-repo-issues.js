@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 import { resolve } from "path";
+import { URL } from "url";
 import { Octokit } from "@octokit/rest";
 import { throttling } from "@octokit/plugin-throttling";
-import {getDirectories} from "../utils.js"
+import { getDirectories } from "../utils.js";
 
 const componentsPath = resolve(
-  process.cwd(),
+  new URL(".", import.meta.url).pathname,
   "calcite-components",
   "src",
   "components"
@@ -77,10 +78,7 @@ let progressInterval;
     });
 
     for (const [index, component] of componentDirectories.entries()) {
-      if (
-        skipComponents.includes(component) ||
-        createdIssuesCount + 1 >= index
-      )
+      if (skipComponents.includes(component) || createdIssuesCount + 1 >= index)
         continue;
 
       await octokit.rest.issues.create({

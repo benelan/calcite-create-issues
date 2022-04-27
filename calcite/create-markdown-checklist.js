@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 import { resolve } from "path";
+import { URL } from "url";
 import { createWriteStream } from "fs";
 import { getDirectories } from "../utils.js";
 
+// writes names next to components in the checklist
+// empty array skips adding names
 const assignees = ["Add", "Assignees", "Here"];
 
 const skip = [
@@ -18,11 +21,12 @@ const skip = [
 ];
 
 const componentsPath = resolve(
-  process.cwd(),
+  new URL(".", import.meta.url).pathname,
   "calcite-components",
   "src",
   "components"
 );
+
 const outputPath = resolve("component-checklist.md");
 
 (async () => {
@@ -41,7 +45,8 @@ const outputPath = resolve("component-checklist.md");
         Math.floor((index - skip.length) / componentsPerAssignee),
         0
       );
-      stream.write(`- [ ] \`${component}\` (${assignees[assigneeIndex]})\n`);
+      stream.write(`- [ ] \`${component}\``);
+      stream.write(assignees.length ? `(${assignees[assigneeIndex]})\n` : "\n");
     }
   } catch (err) {
     console.error(err);
