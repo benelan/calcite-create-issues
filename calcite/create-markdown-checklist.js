@@ -2,7 +2,7 @@
 import { resolve } from "path";
 import { URL } from "url";
 import { createWriteStream } from "fs";
-import { getDirectories } from "../utils.js";
+import { readdir } from "fs/promises";
 
 // evenly adds names next to components in the checklist
 // an empty array skips adding names
@@ -29,6 +29,11 @@ const componentsPath = resolve(
 
 const outputPath = resolve("component-checklist.md");
 
+const getDirectories = async (directoryPath) =>
+  (await readdir(directoryPath, { withFileTypes: true }))
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
+
 (async () => {
   try {
     const componentDirectories = await getDirectories(componentsPath);
@@ -47,7 +52,9 @@ const outputPath = resolve("component-checklist.md");
         0
       );
       stream.write(`- [ ] \`${component}\``);
-      stream.write(assignees.length ? ` (${assignees[assigneeIndex]})\n` : "\n");
+      stream.write(
+        assignees.length ? ` (${assignees[assigneeIndex]})\n` : "\n"
+      );
     }
   } catch (err) {
     console.error(err);

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { resolve } from "path";
+import { readdir } from "fs/promises";
 import { URL } from "url";
 import { Octokit } from "@octokit/rest";
 import { throttling } from "@octokit/plugin-throttling";
-import { getDirectories } from "../utils.js";
 
 const componentsPath = resolve(
   new URL(".", import.meta.url).pathname,
@@ -47,6 +47,11 @@ Create a Figma v2 design for ${component}.
 // https://docs.github.com/en/rest/overview/resources-in-the-rest-api#secondary-rate-limits
 let createdIssuesCount = 0;
 let progressInterval;
+
+const getDirectories = async (directoryPath) =>
+  (await readdir(directoryPath, { withFileTypes: true }))
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
 
 (async () => {
   try {
