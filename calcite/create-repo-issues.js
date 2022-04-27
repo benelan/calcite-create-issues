@@ -5,12 +5,22 @@ import { Octokit } from "@octokit/rest";
 import { throttling } from "@octokit/plugin-throttling";
 import { getDirectories, sleep, toggleLoadingAnimation } from "./utils.js";
 
-const componentsPath = resolve(
-  new URL(".", import.meta.url).pathname,
-  "calcite-components",
-  "src",
-  "components"
-);
+/* THESE VARIABLES MAY NEED TO CHANGE*/
+const baseUrl = "https://devtopia.esri.com/api/v3"; // use "https://api.github.com" for non-Enterprise GitHub
+const repoOwner = "WebGIS"; // user or org
+const repoName = "calcite-components";
+const repoScopedPAT = ""; // add a Personal Access Token with 'repo' scope
+
+const issueLabels = ["figma"];
+const issueTitle = (component) => `[${component}] Figma v2 design`;
+const issueBody = (component) => `## Description
+Create a Figma v2 design for ${component}.
+
+## Requirements
+> Designer should fill in what needs to be done (variants, themes, RTL, etc).
+
+## Checklist
+> Designer should fill in the general checklist that will be created.`;
 
 const skipComponents = [
   "functional",
@@ -24,22 +34,12 @@ const skipComponents = [
   "sortable-list",
 ];
 
-const baseUrl = "https://devtopia.esri.com/api/v3"; // use "https://api.github.com" for non-Enterprise GitHub
-
-const repoScopedPAT = "";
-const repoOwner = "WebGIS"; // user or org
-const repoName = "calcite-components";
-
-const issueLabels = ["figma"];
-const issueTitle = (component) => `[${component}] Figma v2 design`;
-const issueBody = (component) => `## Description
-Create a Figma v2 design for ${component}.
-
-## Requirements
-> Designer should fill in what needs to be done (variants, themes, RTL, etc).
-
-## Checklist
-> Designer should fill in the general checklist that will be created.`;
+if (!repoScopedPAT) {
+  console.error(
+    "The script is missing a 'repo' scoped GitHub Personal Access Token. Please make sure to fill in the correct information."
+  );
+  process.exit(1);
+}
 
 // The secondary rate limit will cause the script to stop. (may not apply to Enterprise)
 // In the console, it will tell you how many issues were created during the run.
@@ -58,6 +58,13 @@ let createdIssuesCount = 0;
     console.log("\n\nTotal issues created:", createdIssuesCount)
   );
 });
+
+const componentsPath = resolve(
+  new URL(".", import.meta.url).pathname,
+  "calcite-components",
+  "src",
+  "components"
+);
 
 (async () => {
   try {
