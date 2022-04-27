@@ -42,20 +42,16 @@ const getDirectories = async (directoryPath) =>
     const componentsPerAssignee =
       (componentDirectories.length - skip.length) / assignees.length;
 
-    for (const [index, component] of Object.entries(componentDirectories)) {
-      if (skip.includes(component)) {
-        continue;
-      }
+    componentDirectories
+      .filter((c) => !skip.includes(c))
+      .forEach((component, index) => {
+        const assigneeIndex = Math.floor(index / componentsPerAssignee);
 
-      const assigneeIndex = Math.max(
-        Math.floor((index - skip.length) / componentsPerAssignee),
-        0
-      );
-      stream.write(`- [ ] \`${component}\``);
-      stream.write(
-        assignees.length ? ` (${assignees[assigneeIndex]})\n` : "\n"
-      );
-    }
+        stream.write(`- [ ] \`${component}\``);
+        stream.write(
+          assignees.length ? ` (${assignees[assigneeIndex]})\n` : "\n"
+        );
+      });
   } catch (err) {
     console.error(err);
     process.exitCode = 1;
