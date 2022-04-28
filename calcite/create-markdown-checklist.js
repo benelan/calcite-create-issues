@@ -29,15 +29,14 @@ const componentsPath = resolve(
 
 const outputPath = resolve("component-checklist.md");
 
-const getDirectories = async (directoryPath) =>
-  (await readdir(directoryPath, { withFileTypes: true }))
-    .filter((dirent) => dirent.isDirectory())
-    .map((dirent) => dirent.name);
-
 (async () => {
   try {
-    const componentDirectories = await getDirectories(componentsPath);
     const stream = createWriteStream(outputPath);
+    const componentDirectories = (
+      await readdir(componentsPath, { withFileTypes: true })
+    )
+      .filter((dirent) => dirent.isDirectory())
+      .map((dirent) => dirent.name);
 
     const componentsPerAssignee =
       (componentDirectories.length - skip.length) / assignees.length;

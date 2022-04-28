@@ -3,7 +3,7 @@ import { resolve } from "path";
 import { URL } from "url";
 import { Octokit } from "@octokit/rest";
 import { throttling } from "@octokit/plugin-throttling";
-import { getDirectories, sleep, toggleLoadingAnimation } from "./utils.js";
+import { getDirectories, sleep, toggleLoadingAnimation } from "../utils.js";
 
 /* THESE VARIABLES MAY NEED TO CHANGE*/
 const baseUrl = "https://devtopia.esri.com/api/v3"; // use "https://api.github.com" for non-Enterprise GitHub
@@ -41,7 +41,7 @@ if (!repoScopedPAT) {
   process.exit(1);
 }
 
-// The secondary rate limit will cause the script to stop. (may not apply to Enterprise)
+// The secondary rate limit may cause the script to stop.
 // In the console, it will tell you how many issues were created during the run.
 // Change createdIssueCount to that number, wait a while, and run the script again.
 // https://docs.github.com/en/rest/overview/resources-in-the-rest-api#secondary-rate-limits
@@ -109,7 +109,7 @@ const componentsPath = resolve(
           body: issueBody(component),
           labels: issueLabels,
         });
-        createdIssuesCount += 1;
+        createdIssuesCount++;
         await sleep(2000);
       }
     }
