@@ -4,9 +4,13 @@ import { URL } from "url";
 import { createWriteStream } from "fs";
 import { readdir } from "fs/promises";
 
-// evenly adds names next to components in the checklist
-// an empty array skips adding names
-const assignees = ["Add", "Assignees", "Here"];
+// Fairly distributes components
+// by adding a name next to them in the checklist.
+// Use an empty array for no names.
+const assignees = ["Add", "Assignees", "Here"]
+  .map((value) => ({ value, sort: Math.random() }))
+  .sort((a, b) => a.sort - b.sort)
+  .map(({ value }) => value);
 
 const skip = [
   "functional",
