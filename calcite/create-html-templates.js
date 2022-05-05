@@ -65,7 +65,7 @@ function getHTML(component) {
     />
     <style>
       h1,
-      ${component} {
+      calcite-${component} {
         margin-bottom: 5rem;
       }
       h2 {
