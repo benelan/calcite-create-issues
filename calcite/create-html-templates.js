@@ -69,7 +69,7 @@ function getHTML(component) {
     />
     <style>
       h1,
-      component-name {
+      calcite-${component} {
         margin-bottom: 5rem;
       }
       h2 {
@@ -82,7 +82,7 @@ function getHTML(component) {
   </head>
   <body>
     <main>
-      <h1><code>component-name</code></h1>
+      <h1><code>${component}</code></h1>
 
       <calcite-${component}></calcite-${component}>
     </main>
