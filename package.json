@@ -4,7 +4,7 @@
   "description": "Automation scripts using the GitHub API.",
   "type": "module",
   "scripts": {
-    "postinstall": "git submodule update --init --recursive",
+    "postinstall": "git submodule update --init --recursive --remote",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Ben Elan",
