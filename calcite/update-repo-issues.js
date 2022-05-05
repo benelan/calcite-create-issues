@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { Octokit } from "@octokit/rest";
-import { throttling } from "@octokit/plugin-throttling";
+const { Octokit } = require("@octokit/rest");
+const { throttling } = require("@octokit/plugin-throttling");
 
 /* THESE VARIABLES MAY NEED TO CHANGE*/
 const baseUrl = "https://devtopia.esri.com/api/v3"; // use "https://api.github.com" for non-Enterprise GitHub

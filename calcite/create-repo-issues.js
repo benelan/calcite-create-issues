@@ -1,9 +1,8 @@
 #!/usr/bin/env node
-import { resolve } from "path";
-import { URL } from "url";
-import { Octokit } from "@octokit/rest";
-import { throttling } from "@octokit/plugin-throttling";
-import { getDirectories, sleep, toggleLoadingAnimation } from "../utils.js";
+const { resolve } = require("path");
+const { Octokit } = require("@octokit/rest");
+const { throttling } = require("@octokit/plugin-throttling");
+const { getDirectories, sleep, toggleLoadingAnimation } = require("../utils.js");
 
 /* THESE VARIABLES MAY NEED TO CHANGE*/
 const baseUrl = "https://devtopia.esri.com/api/v3"; // use "https://api.github.com" for non-Enterprise GitHub
@@ -60,7 +59,7 @@ let createdIssuesCount = 0;
 });
 
 const componentsPath = resolve(
-  new URL(".", import.meta.url).pathname,
+  __dirname,
   "calcite-components",
   "src",
   "components"

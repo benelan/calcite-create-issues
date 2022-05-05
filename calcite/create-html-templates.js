@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-import { resolve } from "path";
-import { URL } from "url";
-import { mkdir, readdir, writeFile, stat } from "fs/promises";
+const { resolve } = require( "path");
+const { mkdir, readdir, writeFile } = require( "fs/promises");
 
 const skip = [
   "functional",
@@ -15,8 +14,6 @@ const skip = [
   "sortable-list",
 ];
 
-const __dirname = new URL(".", import.meta.url).pathname;
-
 const componentsPath = resolve(
   __dirname,
   "calcite-components",
@@ -27,11 +24,7 @@ const componentsPath = resolve(
 (async () => {
   try {
     const outdir = resolve(__dirname, "html-templates");
-
-    await stat(outdir).catch(async (err) => {
-      if (err.code === "ENOENT") await mkdir(outdir);
-      else throw err;
-    });
+    await mkdir(outdir, { recursive: true });
 
     const components = (await readdir(componentsPath, { withFileTypes: true }))
       .filter((dirent) => dirent.isDirectory())

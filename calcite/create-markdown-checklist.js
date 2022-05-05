@@ -1,8 +1,7 @@
 #!/usr/bin/env node
-import { resolve } from "path";
-import { URL } from "url";
-import { createWriteStream } from "fs";
-import { readdir } from "fs/promises";
+const { resolve } = require("path");
+const { createWriteStream } = require("fs");
+const { readdir } = require("fs/promises");
 
 // Fairly distributes components
 // by adding a name next to them in the checklist.
@@ -25,7 +24,7 @@ const skip = [
 ];
 
 const componentsPath = resolve(
-  new URL(".", import.meta.url).pathname,
+  __dirname,
   "calcite-components",
   "src",
   "components"

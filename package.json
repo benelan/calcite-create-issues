@@ -2,7 +2,6 @@
   "name": "github-scripts",
   "version": "0.0.1",
   "description": "Automation scripts using the GitHub API.",
-  "type": "module",
   "scripts": {
     "postinstall": "git submodule update --init --recursive --remote",
     "test": "echo \"Error: no test specified\" && exit 1"

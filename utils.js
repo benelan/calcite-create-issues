@@ -1,13 +1,13 @@
-import { readdir } from "fs/promises";
+const { readdir } = require("fs/promises");
 
-export const getDirectories = async (directoryPath) =>
+const getDirectories = async (directoryPath) =>
   (await readdir(directoryPath, { withFileTypes: true }))
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => dirent.name);
 
-export const sleep = ms => new Promise(r => setTimeout(r, ms));
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export const toggleLoadingAnimation = (() => {
+const toggleLoadingAnimation = (() => {
   let called = false;
   let interval;
   return (message = "loading") => {
@@ -28,10 +28,10 @@ export const toggleLoadingAnimation = (() => {
       let count = 0;
       interval = setInterval(() => {
         if (count % 7 === 0)
-        // delete line, send cursor back to start, add message
-        process.stdout.write(`\u001B[2K\r${message}`);
-      else process.stdout.write(".");
-      count += 1;
+          // delete line, send cursor back to start, add message
+          process.stdout.write(`\u001B[2K\r${message}`);
+        else process.stdout.write(".");
+        count += 1;
       }, 100);
       called = true;
     } else {
@@ -41,3 +41,7 @@ export const toggleLoadingAnimation = (() => {
     }
   };
 })();
+
+exports.getDirectories = getDirectories;
+exports.sleep = sleep;
+exports.toggleLoadingAnimation = toggleLoadingAnimation;
