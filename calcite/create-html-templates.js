@@ -46,11 +46,14 @@ const componentsPath = resolve(
 
 function getHTML(component) {
   return `<!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>calcite-${component} template</title>
+    <meta
+      name="viewport"
+      content="initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <title>${component}</title>
     <script
       type="module"
       src="https://unpkg.com/@esri/calcite-components@1.0.0-beta.81/dist/calcite/calcite.esm.js"
@@ -60,13 +63,25 @@ function getHTML(component) {
       type="text/css"
       href="https://unpkg.com/@esri/calcite-components@1.0.0-beta.81/dist/calcite/calcite.css"
     />
+    <style>
+      h1,
+      component-name {
+        margin-bottom: 5rem;
+      }
+      h2 {
+        margin-bottom: 3rem;
+      }
+      main {
+        padding: 3rem;
+      }
+    </style>
   </head>
-  <style>
-  </style>
   <body>
-    <calcite-${component}></calcite-${component}>
+    <main>
+      <h1><code>component-name</code></h1>
+
+      <calcite-${component}></calcite-${component}>
+    </main>
   </body>
-  <script>
-  </script>
 </html>`;
 }
