@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { resolve } from "path";
 import { URL } from "url";
-import { mkdir, readdir, writeFile } from "fs/promises";
+import { mkdir, readdir, writeFile, stat } from "fs/promises";
 
 const skip = [
   "functional",
@@ -27,7 +27,11 @@ const componentsPath = resolve(
 (async () => {
   try {
     const outdir = resolve(__dirname, "html-templates");
-    await mkdir(outdir, { recursive: true });
+
+    await stat(outdir).catch(async (err) => {
+      if (err.code === "ENOENT") await mkdir(outdir);
+      else throw err;
+    });
 
     const components = (await readdir(componentsPath, { withFileTypes: true }))
       .filter((dirent) => dirent.isDirectory())
