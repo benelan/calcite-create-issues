@@ -46,10 +46,6 @@ function getHTML(component) {
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="initial-scale=1, maximum-scale=1, user-scalable=no"
-    />
     <title>${component}</title>
     <script
       type="module"
@@ -68,17 +64,62 @@ function getHTML(component) {
       h2 {
         margin-bottom: 3rem;
       }
-      main {
-        padding: 3rem;
+      body {
+        font-family: var(--calcite-sans-family);
+        font-size: var(--calcite-font-size-0);
+        color: var(--calcite-ui-text-1);
+        max-width: 1024px;
+        min-width: 280px;
+        width: 70vw;
+        padding: 0 var(--calcite-spacing-double);
+        margin: 0 auto;
+        background-color: var(--calcite-ui-background);
+      }
+      /* Theme Switcher */
+      #theme-label {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 2;
+        background-color: var(--calcite-ui-background);
+        border: 1px solid;
+        border-color: var(--calcite-ui-border-1);
+        border-radius: var(--calcite-border-radius);
+        margin: 0;
+        padding: 10px;
+      }
+      #theme-label label {
+        margin: 0;
       }
     </style>
   </head>
   <body>
     <main>
+
+      <!-- calcite-switch -->
+      <div id="theme-label">
+        <calcite-label layout="inline">
+        Toggle theme
+        <calcite-switch id="theme-switch"></calcite-switch>
+        </calcite-label>
+      </div>
+
       <h1><code>${component}</code></h1>
 
       <calcite-${component}></calcite-${component}>
+
     </main>
   </body>
+
+  <script>
+    window.onload = () => {
+      // Theme Switcher
+      const themeSwitch = document.getElementById("theme-switch");
+      themeSwitch.addEventListener("calciteSwitchChange", () => {
+      document.body.classList.toggle("calcite-theme-dark");
+      });
+    };
+
+  </script>
 </html>`;
 }
