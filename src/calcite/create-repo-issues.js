@@ -1,37 +1,74 @@
-#!/usr/bin/env node
-import { resolve } from "path";
-import { URL } from "url";
 import { Octokit } from "@octokit/rest";
 import { throttling } from "@octokit/plugin-throttling";
-import { getDirectories, sleep, toggleLoadingAnimation } from "../utils.js";
+import { sleep, toggleLoadingAnimation } from "../utils.js";
 
 /* THESE VARIABLES MAY NEED TO CHANGE*/
-const baseUrl = "https://devtopia.esri.com/api/v3"; // use "https://api.github.com" for non-Enterprise GitHub
-const repoOwner = "WebGIS"; // user or org
+const baseUrl = "https://api.github.com";
+const repoOwner = "Esri"; // user or org
 const repoName = "calcite-components";
 const repoScopedPAT = ""; // add a Personal Access Token with 'repo' scope
 
-const issueLabels = ["figma"];
-const issueTitle = (component) => `[${component}] Figma v2 design`;
-const issueBody = (component) => `## Description
-Create a Figma v2 design for ${component}.
+const issueLabels = ["testing", "0 - new", "p - high"];
 
-## Requirements
-> Designer should fill in what needs to be done (variants, themes, RTL, etc).
+const issueTitle = (component) =>
+  `[${component}] Implement screenshot test for center body alignment`;
 
-## Checklist
-> Designer should fill in the general checklist that will be created.`;
+  const issueBody = (component) => `### Test type
 
-const skipComponents = [
-  "functional",
-  "color-picker-hex-input",
-  "color-picker-swatch",
-  "date-picker-day",
-  "date-picker-month",
-  "date-picker-month-header",
-  "graph",
-  "handle",
-  "sortable-list",
+Screener
+
+### Which Component(s)
+
+${component}
+
+### Unstable Tests
+
+_no response_
+
+### Test error, if applicable
+
+_no response_
+
+### PR skipped, if applicable
+
+_no response_
+
+### Additional Info
+
+For epic #4632
+
+https://esri.github.io/calcite-components
+
+#### Scope
+
+When components aren't accounting for when the body is aligned to center.
+
+#### Action needed
+
+Screenshot test needed to account for body alignment to center.`;
+
+const components = [
+  "Alert",
+  "Block",
+  "Card",
+  "Flow",
+  "Label",
+  "Loader",
+  "Modal",
+  "Notice",
+  "Panel",
+  "Pick List",
+  "Popover",
+  "Shell",
+  "Stepper",
+  "Tabs",
+  "Tile Select Group",
+  "Tile Select",
+  "Tile",
+  "Tip",
+  "Tooltip",
+  "Tree",
+  "Value List",
 ];
 
 if (!repoScopedPAT) {
@@ -59,17 +96,9 @@ let createdIssuesCount = 0;
   );
 });
 
-const componentsPath = resolve(
-  new URL(".", import.meta.url).pathname,
-  "calcite-components",
-  "src",
-  "components"
-);
-
 (async () => {
   try {
     toggleLoadingAnimation("creating issues");
-    const componentDirectories = await getDirectories(componentsPath);
 
     const ThrottledOctokit = Octokit.plugin(throttling);
     const octokit = new ThrottledOctokit({
@@ -95,10 +124,6 @@ const componentsPath = resolve(
         },
       },
     });
-
-    const components = componentDirectories.filter(
-      (c) => !skipComponents.includes(c)
-    );
 
     for (const [index, component] of components.entries()) {
       if (createdIssuesCount <= index) {
