@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 import { resolve } from "path";
 import { URL } from "url";
 import { mkdir, readdir, writeFile, stat } from "fs/promises";
@@ -19,9 +20,11 @@ const __dirname = new URL(".", import.meta.url).pathname;
 
 const componentsPath = resolve(
   __dirname,
+  "calcite-design-system",
+  "packages",
   "calcite-components",
   "src",
-  "components"
+  "components",
 );
 
 (async () => {

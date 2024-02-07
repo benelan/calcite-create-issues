@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 import { resolve } from "path";
 import { URL } from "url";
 import { Octokit } from "@octokit/rest";
@@ -8,7 +9,7 @@ import { getDirectories, sleep, toggleLoadingAnimation } from "../utils.js";
 /* THESE VARIABLES MAY NEED TO CHANGE*/
 const baseUrl = "https://devtopia.esri.com/api/v3"; // use "https://api.github.com" for non-Enterprise GitHub
 const repoOwner = "WebGIS"; // user or org
-const repoName = "calcite-components";
+const repoName = "calcite-design-system";
 const repoScopedPAT = ""; // add a Personal Access Token with 'repo' scope
 
 const issueLabels = ["figma"];
@@ -36,7 +37,7 @@ const skipComponents = [
 
 if (!repoScopedPAT) {
   console.error(
-    "The script is missing a 'repo' scoped GitHub Personal Access Token."
+    "The script is missing a 'repo' scoped GitHub Personal Access Token.",
   );
   process.exit(1);
 }
@@ -55,15 +56,17 @@ let createdIssuesCount = 0;
   `SIGTERM`,
 ].forEach((event) => {
   process.once(event, () =>
-    console.log("\n\nTotal issues created:", createdIssuesCount)
+    console.log("\n\nTotal issues created:", createdIssuesCount),
   );
 });
 
 const componentsPath = resolve(
   new URL(".", import.meta.url).pathname,
+  "calcite-design-system",
+  "packages",
   "calcite-components",
   "src",
-  "components"
+  "components",
 );
 
 (async () => {
@@ -78,7 +81,7 @@ const componentsPath = resolve(
       throttle: {
         onRateLimit: (retryAfter, options, octokit) => {
           octokit.log.warn(
-            `Request quota exhausted for request ${options.method} ${options.url}`
+            `Request quota exhausted for request ${options.method} ${options.url}`,
           );
 
           if (options.request.retryCount < 5) {
@@ -89,7 +92,7 @@ const componentsPath = resolve(
         onSecondaryRateLimit: (retryAfter, options, octokit) => {
           // does not retry, only logs a warning
           octokit.log.warn(
-            `SecondaryRateLimit detected for request ${options.method} ${options.url}`
+            `SecondaryRateLimit detected for request ${options.method} ${options.url}`,
           );
           process.exit(1);
         },
@@ -97,7 +100,7 @@ const componentsPath = resolve(
     });
 
     const components = componentDirectories.filter(
-      (c) => !skipComponents.includes(c)
+      (c) => !skipComponents.includes(c),
     );
 
     for (const [index, component] of components.entries()) {

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 import { Octokit } from "@octokit/rest";
 import { throttling } from "@octokit/plugin-throttling";
 import { readFile } from "fs/promises";
@@ -7,7 +8,7 @@ import { toggleLoadingAnimation } from "../utils.js";
 /* THESE VARIABLES MAY NEED TO CHANGE*/
 const baseUrl = "https://api.github.com";
 const repoOwner = "Esri"; // user or org
-const repoName = "calcite-components";
+const repoName = "calcite-design-system";
 const repoScopedPAT = ""; // add a Personal Access Token with 'repo' scope
 
 if (!repoScopedPAT) {
@@ -120,7 +121,7 @@ if (!repoScopedPAT) {
     if (missingProductLabels.length) {
       console.log(
         `\nThe ${missingProductLabels.length} product team names below do not have a matching label. Please check the existing labels for spelling or naming variations:`,
-        "\nhttps://github.com/Esri/calcite-components/labels?q=logged",
+        "\nhttps://github.com/Esri/calcite-design-system/labels?q=logged",
         "\nIf the product label doesn't exist, please add it and rerun the script."
       );
       missingProductLabels.forEach((_, index) => {

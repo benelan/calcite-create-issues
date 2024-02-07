@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 import { resolve } from "path";
 import { URL } from "url";
 import { createWriteStream } from "fs";
@@ -26,9 +27,11 @@ const skip = [
 
 const componentsPath = resolve(
   new URL(".", import.meta.url).pathname,
+  "calcite-design-system",
+  "packages",
   "calcite-components",
   "src",
-  "components"
+  "components",
 );
 
 const outputPath = resolve("component-checklist.md");
@@ -52,7 +55,7 @@ const outputPath = resolve("component-checklist.md");
 
         stream.write(`- [ ] \`${component}\``);
         stream.write(
-          assignees.length ? ` (${assignees[assigneeIndex]})\n` : "\n"
+          assignees.length ? ` (${assignees[assigneeIndex]})\n` : "\n",
         );
       });
   } catch (err) {

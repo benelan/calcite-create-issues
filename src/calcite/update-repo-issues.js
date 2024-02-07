@@ -5,7 +5,7 @@ import { throttling } from "@octokit/plugin-throttling";
 /* THESE VARIABLES MAY NEED TO CHANGE*/
 const baseUrl = "https://devtopia.esri.com/api/v3"; // use "https://api.github.com" for non-Enterprise GitHub
 const repoOwner = "WebGIS"; // user or org
-const repoName = "calcite-components";
+const repoName = "calcite-design-system";
 const repoScopedPAT = ""; // add a Personal Access Token with 'repo' scope
 
 const issueLabels = ["figma"];
@@ -46,7 +46,7 @@ const checklist = `
 
 if (!repoScopedPAT) {
   console.error(
-    "The script is missing a 'repo' scoped GitHub Personal Access Token."
+    "The script is missing a 'repo' scoped GitHub Personal Access Token.",
   );
   process.exit(1);
 }
@@ -60,7 +60,7 @@ if (!repoScopedPAT) {
       throttle: {
         onRateLimit: (retryAfter, options, octokit) => {
           octokit.log.warn(
-            `Request quota exhausted for request ${options.method} ${options.url}`
+            `Request quota exhausted for request ${options.method} ${options.url}`,
           );
 
           if (options.request.retryCount < 5) {
@@ -71,7 +71,7 @@ if (!repoScopedPAT) {
         onSecondaryRateLimit: (retryAfter, options, octokit) => {
           // does not retry, only logs a warning
           octokit.log.warn(
-            `SecondaryRateLimit detected for request ${options.method} ${options.url}`
+            `SecondaryRateLimit detected for request ${options.method} ${options.url}`,
           );
           process.exit(1);
         },
