@@ -69,11 +69,11 @@ const output = {};
         due_on: milestone.due_on,
         title: milestone.title,
         description: milestone.description,
-        open_issues: milestone.open_issues,
-        closed_issues: milestone.closed_issues,
+        closed_issues: 0,
         issues_with_estimate: 0,
         effort_estimate: 0,
       };
+
       const issues = await octokit.rest.issues.listForRepo({
         owner: repoOwner,
         repo: repoName,
@@ -83,12 +83,18 @@ const output = {};
       });
 
       for (const issue of issues.data) {
+        if (issue.pull_request) {
+          continue;
+        }
+
+        output[milestone.number].closed_issues++;
+
         for (const label of issue.labels) {
           if (label.name.match(/estimate/)) {
+            output[milestone.number].issues_with_estimate++;
             output[milestone.number].effort_estimate += Number.parseInt(
               label.name.replace(/\D/g, ""),
             );
-            output[milestone.number].issues_with_estimate++;
             break;
           }
         }
