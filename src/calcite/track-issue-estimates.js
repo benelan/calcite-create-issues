@@ -1,15 +1,17 @@
 #!/usr/bin/env node
+// @ts-check
 
-import { Octokit } from "@octokit/rest";
-import { throttling } from "@octokit/plugin-throttling";
+import { resolve } from "path";
 import { writeFile } from "fs/promises";
+import { Octokit } from "octokit";
+import { throttling } from "@octokit/plugin-throttling";
 import { toggleLoadingAnimation } from "../utils.js";
 
 /* THESE VARIABLES MAY NEED TO CHANGE*/
 const baseUrl = "https://api.github.com";
-const repoOwner = "Esri"; // user or org
-const repoName = "calcite-design-system";
-const repoScopedPAT = ""; // add a Personal Access Token with 'repo' scope
+const owner = "Esri"; // user or org
+const repo = "calcite-design-system";
+const repoScopedPAT = process.env.GH_TOKEN; // add a Personal Access Token with 'repo' scope
 
 if (!repoScopedPAT) {
   console.error(
@@ -18,13 +20,12 @@ if (!repoScopedPAT) {
   process.exit(1);
 }
 
-const output = {};
-
 (async () => {
   try {
     toggleLoadingAnimation(
-      "Generating milestone estimates for the calcite-design-system repo...",
+      `Generating milestone estimates for the ${repo} repo...`,
     );
+
     const ThrottledOctokit = Octokit.plugin(throttling);
     const octokit = new ThrottledOctokit({
       baseUrl,
@@ -50,61 +51,72 @@ const output = {};
       },
     });
 
+    const outputJson = {};
+    let outputCsv =
+      "id,title,due_on,open_issues,closed_issues,remaining_estimate,completed_estimate";
+
     const milestones = await octokit.rest.issues.listMilestones({
-      owner: repoOwner,
-      repo: repoName,
-      state: "closed",
+      owner: owner,
+      repo: repo,
+      state: "all",
       sort: "due_on",
-      per_page: 16,
+      per_page: 100,
       direction: "desc",
     });
 
     if (milestones.data.length === 0) {
-      console.error("No closed milestones found.");
+      console.error("No milestones found.");
       process.exit(1);
     }
 
     for (const milestone of milestones.data) {
-      output[milestone.number] = {
-        due_on: milestone.due_on,
+      outputJson[milestone.number] = {
         title: milestone.title,
-        description: milestone.description,
-        closed_issues: 0,
-        issues_with_estimate: 0,
-        effort_estimate: 0,
+        due_on: milestone.due_on,
+        open_issues: milestone.open_issues,
+        closed_issues: milestone.closed_issues,
+        remaining_estimate: 0,
+        completed_estimate: 0,
       };
 
-      const issues = await octokit.rest.issues.listForRepo({
-        owner: repoOwner,
-        repo: repoName,
+      const issues = await octokit.paginate(octokit.rest.issues.listForRepo, {
+        // @ts-ignore milestone.number is valid: https://docs.github.com/en/rest/issues/issues#list-repository-issues--parameters
         milestone: milestone.number,
-        state: "closed",
+        owner: owner,
+        repo: repo,
+        state: "all",
         per_page: 100,
       });
 
-      for (const issue of issues.data) {
+      for (const issue of issues) {
         if (issue.pull_request) {
           continue;
         }
 
-        output[milestone.number].closed_issues++;
-
         for (const label of issue.labels) {
-          if (label.name.match(/estimate/)) {
-            output[milestone.number].issues_with_estimate++;
-            output[milestone.number].effort_estimate += Number.parseInt(
-              label.name.replace(/\D/g, ""),
-            );
-            break;
+          const estimateLabelMatch = (
+            typeof label === "string" ? label : label?.name
+          )?.match(/estimate - (\d+)/);
+
+          if (estimateLabelMatch?.length > 1) {
+            outputJson[milestone.number][
+              issue.state === "open"
+                ? "remaining_estimate"
+                : "completed_estimate"
+            ] += Number.parseInt(estimateLabelMatch[1]);
+
+            break; // assumes an issue will only have one estimate label
           }
         }
       }
+
+      outputCsv = `${outputCsv}\n${milestone.number},${Object.values(outputJson[milestone.number]).join(",")}`;
     }
 
-    await writeFile(
-      "./milestone-estimates.json",
-      JSON.stringify(output, null, 2),
-    );
+    const stringifiedOutputJson = JSON.stringify(outputJson, null, 2);
+
+    await writeFile("./milestone-estimates.csv", outputCsv);
+    await writeFile("./milestone-estimates.json", stringifiedOutputJson);
 
     toggleLoadingAnimation();
     process.exit(0);
